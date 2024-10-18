@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Chime</title>
+  </head>
+  <body>
+    <div hx-ext="ws" ws-connect="/ws">
+      <div>
+        <ul id="chat_room" hx-swap="beforeend" hx-swap-oob="beforeend">
+        </ul>
+      </div>
+      <form id="form" ws-send hx-reset-on-success>
+        <input name="text" type="text" placeholder="type message here..."/>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </body>
+</html>
