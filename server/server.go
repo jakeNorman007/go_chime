@@ -41,6 +41,8 @@ func (s *Service) Run() error {
     WriteTimeout:   30 * time.Second,
   }
 
+  //ROUTE NEEDS TO GO HERE
+
   router.HandleFunc("/", templates.ServeIndexTemplates)
   router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
     internals.ServeWebSocket(core, w, r)
