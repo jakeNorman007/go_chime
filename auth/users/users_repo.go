@@ -7,6 +7,7 @@ import (
 
 type DBTX interface {
     ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+  	PrepareContext(context.Context, string) (*sql.Stmt, error)
     QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
     QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
 }
@@ -15,7 +16,7 @@ type repo struct {
   db DBTX
 }
 
-func NewRepo(db DBTX) Repo {
+func NewRepo(db DBTX) *repo {
   return &repo {
     db: db,
   }
@@ -23,7 +24,8 @@ func NewRepo(db DBTX) Repo {
 
 func (r *repo) CreateUser(ctx context.Context, user *User) (*User, error) {
   var lastInsertId int
-  query := "INSERT INTO users(username, password, email) VALUES ($1, $2, $3) returning id"
+
+  query := "INSERT INTO users(username, email, password) VALUES ($1, $2, $3) returning id"
   err := r.db.QueryRowContext(ctx, query, user.Username, user.Password, user.Email).Scan(&lastInsertId)
   if err != nil {
     return &User{}, err

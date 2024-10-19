@@ -4,12 +4,12 @@ import (
   "time"
   "context"
   "strconv"
-  "github.com/golang-jwt/jwt/v5"
+  "github.com/golang-jwt/jwt/v4"
   "github.com/jakeNorman007/go_chime/auth/utils"
 )
 
 const (
-  secretKey = "secret"
+  secretKey = "secretSecretSecret"
 )
 
 type service struct {
@@ -17,14 +17,14 @@ type service struct {
   timeout time.Duration
 }
 
-func NewService(repo Repo) Service {
+func NewService(repo Repo) *service {
   return &service {
-    repo,
-    time.Duration(2) * time.Second,
+    Repo: repo,
+    timeout: 2 * time.Second,
   }
 }
 
-func (s *service) Createuser(c context.Context, request *CreateUserRequest) (*CreateUserResponse, error) {
+func (s *service) CreateUser(c context.Context, request *CreateUserRequest) (*CreateUserResponse, error) {
   ctx, cancel := context.WithTimeout(c, s.timeout)
   defer cancel()
 

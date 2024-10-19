@@ -31,5 +31,5 @@ func InitDatabase(db *sql.DB) {
     log.Fatal(err)
   }
 
-  log.Println("Connection to database established")
+  log.Println("Connection to database established...")
 }
