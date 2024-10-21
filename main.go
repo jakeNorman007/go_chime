@@ -6,7 +6,6 @@ import (
   "github.com/jakeNorman007/go_chime/server"
   "github.com/jakeNorman007/go_chime/db"
   "github.com/jakeNorman007/go_chime/auth/users"
-  "github.com/jakeNorman007/go_chime/auth/utils"
 )
 
 func main() {
@@ -15,8 +14,6 @@ func main() {
 
   userRepo := users.NewRepo(databaseConnection)
   userService := users.NewService(userRepo)
-
-  utils.PasswordCheck()
 
   server := server.NewService("PORT", userService)
   if err := server.Run(); err != nil {

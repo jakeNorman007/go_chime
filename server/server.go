@@ -47,9 +47,9 @@ func (s *Service) Run() error {
 
   usersHandler := users.NewHandler(s.usersService)
 
-  router.HandleFunc("POST /signup", usersHandler.CreateUser)
-  router.HandleFunc("POST /login", usersHandler.Login)
-  router.HandleFunc("POST /logout", usersHandler.Logout)
+  router.HandleFunc("/signup", usersHandler.CreateUser)
+  router.HandleFunc("/login", usersHandler.Login)
+  router.HandleFunc("/logout", usersHandler.Logout)
 
   router.HandleFunc("/", templates.ServeIndexTemplates)
 

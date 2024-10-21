@@ -56,6 +56,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
     Path: "/",
     MaxAge: 60 * 60 * 24,
     HttpOnly: true,
+    Secure: false,
+    SameSite: http.SameSiteLaxMode,
   })
 
   w.WriteHeader(http.StatusOK)
