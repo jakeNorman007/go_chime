@@ -77,15 +77,13 @@ func (s *service) Login(c context.Context, request *LoginUserRequest) (*LoginUse
   log.Printf("Retrieved user password: %s", user.Password)
 
   // HERE IS THE ERROR
-  /*
-  err = utils.CheckPassword(request.Password, request.Password)
+  err = utils.CheckPassword(request.Password, user.Password)
   if err != nil {
     log.Printf("Request Password: %v", request.Password)
     log.Printf("User Password: %v", user.Password)
     log.Printf("Password check failed: %v", err)
     return &LoginUserResponse{}, err
   }
-  */
 
   log.Printf("Request password length: %d", len(request.Password))
   log.Printf("Request password: %v", request.Password)
