@@ -5,8 +5,8 @@ import (
   "fmt"
   "log"
   "database/sql"
-  _ "github.com/joho/godotenv/autoload"
   _ "github.com/jackc/pgx/v5/stdlib"
+  _ "github.com/joho/godotenv/autoload"
 )
 
 type dbService struct {

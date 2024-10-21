@@ -1,7 +1,7 @@
 package users
 
 import (
-  "log"
+  //"log"
   "time"
   "context"
   "strconv"
@@ -18,6 +18,13 @@ type service struct {
   timeout time.Duration
 }
 
+type JWTClaims struct {
+  ID        string      `json:"id"`
+  Username  string      `json:"username"`
+
+  jwt.RegisteredClaims
+}
+
 func NewService(repo Repo) *service {
   return &service {
     repo,
@@ -29,15 +36,15 @@ func (s *service) CreateUser(c context.Context, request *CreateUserRequest) (*Cr
   ctx, cancel := context.WithTimeout(c, s.timeout)
   defer cancel()
 
-  log.Printf("Creating user with password: %s", request.Password)
+  //log.Printf("Creating user with password: %s", request.Password)
 
   hashedPassword, err := utils.HashPassword(request.Password)
   if err != nil {
     return nil, err
   }
 
-  log.Printf("Hashed password: %s", hashedPassword)
-  log.Printf("Hashed password length: %d", len(hashedPassword))
+  //log.Printf("Hashed password: %s", hashedPassword)
+  //log.Printf("Hashed password length: %d", len(hashedPassword))
 
   user := &User {
     Username: request.Username,
@@ -59,12 +66,6 @@ func (s *service) CreateUser(c context.Context, request *CreateUserRequest) (*Cr
   return response, nil
 }
 
-type JWTClaims struct {
-  ID        string `json:"id"`
-  Username  string `json:"username"`
-  jwt.RegisteredClaims
-}
-
 func (s *service) Login(c context.Context, request *LoginUserRequest) (*LoginUserResponse, error) {
   ctx, cancel := context.WithTimeout(c, s.timeout)
   defer cancel()
@@ -74,20 +75,19 @@ func (s *service) Login(c context.Context, request *LoginUserRequest) (*LoginUse
     return &LoginUserResponse{}, err
   }
 
-  log.Printf("Retrieved user password: %s", user.Password)
+  //log.Printf("Retrieved user password: %s", user.Password)
 
-  // HERE IS THE ERROR
   err = utils.CheckPassword(request.Password, user.Password)
   if err != nil {
-    log.Printf("Request Password: %v", request.Password)
-    log.Printf("User Password: %v", user.Password)
-    log.Printf("Password check failed: %v", err)
+    //log.Printf("Request Password: %v", request.Password)
+    //log.Printf("User Password: %v", user.Password)
+    //log.Printf("Password check failed: %v", err)
     return &LoginUserResponse{}, err
   }
 
-  log.Printf("Request password length: %d", len(request.Password))
-  log.Printf("Request password: %v", request.Password)
-  log.Printf("User password length encrypted: %d", len(user.Password))
+  //log.Printf("Request password length: %d", len(request.Password))
+  //log.Printf("Request password: %v", request.Password)
+  //log.Printf("User password length encrypted: %d", len(user.Password))
 
   token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims {
     ID: strconv.Itoa(int(user.ID)),

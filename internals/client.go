@@ -23,10 +23,10 @@ var upgrader = websocket.Upgrader {
 }
 
 const (
-  writeWaitTime = 10 * time.Second // gives 10 seconds to write to peer
-  pongWait = 60 * time.Second //time that is allowed to recieve next message from peer
-  pingPeriod = (pongWait * 9) / 10 // sends "pings" to peer, must be less time than pongWait
-  maxMessageSize = 512 // maximum message size allowed from the peer (bytes)
+  writeWaitTime = 10 * time.Second
+  pongWait = 60 * time.Second
+  pingPeriod = (pongWait * 9) / 10
+  maxMessageSize = 512
 )
 
 func ServeWebSocket(core *Core, w http.ResponseWriter, r *http.Request) {
@@ -58,9 +58,9 @@ func (cl *Client) readFromCore() {
     cl.core.unregister <- cl
   }()
 
-  cl.connection.SetReadLimit(maxMessageSize) // sets max byte size you can read from a peer
-  cl.connection.SetReadDeadline(time.Now().Add(pongWait)) // throws error after 60s of not reading a sent message
-  cl.connection.SetPongHandler(func(appData string) error { // appData is the data for the pong application data recieved from the peer
+  cl.connection.SetReadLimit(maxMessageSize)
+  cl.connection.SetReadDeadline(time.Now().Add(pongWait))
+  cl.connection.SetPongHandler(func(appData string) error {
     cl.connection.SetReadDeadline(time.Now().Add(pongWait))
     return nil
   })
@@ -69,9 +69,6 @@ func (cl *Client) readFromCore() {
     _, text, err := cl.connection.ReadMessage()
     log.Printf("value: %v", string(text));
 
-    // client application doesn't normally cause an unexpected closing of websocket connection. ".CloseGoingAway" (1001) is the expected closing
-    // from the client (closing browser, navigating away, etc.) ".CloseAbnormalClosure" (1006) means connection was terminated by browser or
-    // client unexpectedly.
     if err != nil {
       if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
         log.Printf("Error: %v", err)
@@ -97,7 +94,6 @@ func (cl *Client) readFromCore() {
 func (cl *Client) readFromWebSocketConnection() {
   ticker := time.NewTicker(pingPeriod)
 
-  /// defers closing the connection until something goes wrong
   defer func() {
     ticker.Stop()
     cl.connection.Close()
@@ -119,7 +115,6 @@ func (cl *Client) readFromWebSocketConnection() {
 
       wr.Write(msg)
 
-      // adding queued messages to chat
       num := len(cl.send)
       for i := 0; i < num; i++ {
         wr.Write(msg)

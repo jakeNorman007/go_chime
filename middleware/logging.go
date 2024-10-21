@@ -13,4 +13,3 @@ func Logging(next http.Handler) http.Handler {
         log.Println(r.Method, r.URL.Path, time.Since(start))
     })
 }
-

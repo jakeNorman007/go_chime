@@ -1,5 +1,4 @@
 -- +goose Up
-
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY NOT NULL, 
     username VARCHAR(50) NOT NULL,
@@ -8,5 +7,4 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- +goose Down
-
 DROP TABLE users;

@@ -3,8 +3,8 @@ package main
 import (
   "log"
 	_ "github.com/joho/godotenv/autoload"
-  "github.com/jakeNorman007/go_chime/server"
   "github.com/jakeNorman007/go_chime/db"
+  "github.com/jakeNorman007/go_chime/server"
   "github.com/jakeNorman007/go_chime/auth/users"
 )
 

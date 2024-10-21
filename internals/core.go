@@ -40,9 +40,6 @@ func (c *Core) Run() {
   for {
     select {
     case client := <- c.register:
-      // maps in go are not safe for concurrent use. We use mutual exclusion (Mutex) in the core
-      // struct. Makes sure only one variable is being accessed at once to avoid race conditions.
-      // So we use .Lock() and .Unlock() on our map variables to make this work and avoid errors.
       c.Lock()
       c.clients[client] = true
       c.Unlock()
