@@ -1,16 +1,16 @@
 package users
 
 import (
-  //"log"
   "time"
   "context"
   "strconv"
+  "net/http"
   "github.com/golang-jwt/jwt/v4"
   "github.com/jakeNorman007/go_chime/auth/utils"
 )
 
 const (
-  secretKey = "secret"
+  SecretKey = "secret"
 )
 
 type service struct {
@@ -98,10 +98,18 @@ func (s *service) Login(c context.Context, request *LoginUserRequest) (*LoginUse
     },
   })
 
-  ss, err := token.SignedString([]byte(secretKey))
+  ss, err := token.SignedString([]byte(SecretKey))
   if err != nil {
     return &LoginUserResponse {}, err
   }
 
   return &LoginUserResponse { accessToken: ss, Username: user.Username, ID: strconv.Itoa(int(user.ID)) }, nil
+}
+
+func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
+  userID := r.Context().Value("ID").(string)
+  username := r.Context().Value("Username").(string)
+
+  w.WriteHeader(http.StatusOK)
+  w.Write([]byte("Hi " + username + ", your user ID is " + userID))
 }

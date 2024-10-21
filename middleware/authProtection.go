@@ -1,25 +1,36 @@
 package middleware
 
 import (
+  "strings"
+  "context"
   "net/http"
-  //"encoding/json"
   "github.com/golang-jwt/jwt/v4"
-  //"github.com/jakeNorman007/go_chime/auth/users"
+  "github.com/jakeNorman007/go_chime/auth/users"
 )
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
-  //var userLoginRequest users.LoginUserRequest
-  return func(w http.ResponseWriter, r *http.Request) {
-    tokenString := r.Header.Get("Authorization")
-    if tokenString == "" {
-      http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    authenticationHeader := r.Header.Get("Authorization")
+
+    if !strings.HasPrefix(authenticationHeader, "Bearer ") {
+      http.Error(w, "Unauthorized", http.StatusUnauthorized)
       return
     }
 
-    tokenString = tokenString[len("Bearer "):]
+    tokenString := strings.TrimPrefix(authenticationHeader, "Bearer ")
 
-    //claims := &jwt.MapClaims{}
+    claims := &users.JWTClaims {}
+    token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface {}, error) {
+      return []byte(users.SecretKey), nil
+    })
 
-    return
-  }
+    if err != nil || !token.Valid {
+      http.Error(w, "Unauthorized", http.StatusUnauthorized)
+      return
+    }
+
+    ctx := context.WithValue(r.Context(), "ID", claims.ID)
+    ctx = context.WithValue(ctx, "Username", claims.Username)
+    next.ServeHTTP(w, r.WithContext(ctx))
+  })
 }

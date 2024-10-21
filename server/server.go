@@ -50,7 +50,7 @@ func (s *Service) Run() error {
   router.HandleFunc("/signup", usersHandler.CreateUser)
   router.HandleFunc("/login", usersHandler.Login)
   router.HandleFunc("/logout", usersHandler.Logout)
-  //router.HandleFunc("/protected", middleware.AuthMiddleware)
+  router.HandleFunc("/protected", middleware.AuthMiddleware(users.ProtectedHandler))
 
   router.HandleFunc("/", templates.ServeIndexTemplates)
   router.HandleFunc("/auth", templates.ServeAuthenticationTemplates)
