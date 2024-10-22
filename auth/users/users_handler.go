@@ -37,16 +37,23 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-  var userLoginRequest LoginUserRequest
-
-  if err := json.NewDecoder(r.Body).Decode(&userLoginRequest); err != nil {
-    http.Error(w, err.Error(), http.StatusBadRequest)
+  if r.Method != http.MethodPost {
+    http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
     return
+  }
+
+  if err := r.ParseForm(); err != nil {
+    http.Error(w, "Failed to parse form", http.StatusBadRequest)
+  }
+
+  userLoginRequest := LoginUserRequest {
+    Email: r.FormValue("email"),
+    Password: r.FormValue("password"),
   }
 
   user, err := h.Service.Login(r.Context(), &userLoginRequest)
   if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
+    http.Error(w, "Invalid login credentials", http.StatusUnauthorized)
     return
   }
 
@@ -60,11 +67,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
     SameSite: http.SameSiteLaxMode,
   })
 
-  w.WriteHeader(http.StatusOK)
-  if err := json.NewEncoder(w).Encode(user); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
+  w.Header().Set("HX-Redirect", "/chat")
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
@@ -76,9 +79,5 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
     HttpOnly: true,
   })
 
-  w.WriteHeader(http.StatusOK)
-  if err := json.NewEncoder(w).Encode(map[string]string{"Message": "logout successful"}); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-  }
+  http.Redirect(w, r, "/auth", http.StatusSeeOther)
 }

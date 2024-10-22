@@ -2,17 +2,25 @@
 <html lang="en">
   <head>
     <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Chime</title>
   </head>
-  <body id="whole-body">
-    <h2>Log In</h2>
-    <form id="login-form" hx-post="/login" hx-target="#response" hx-swap="outerHTML">
-        <input type="text" name="email" placeholder="email" required>
-        <input type="password" name="password" placeholder="password" required>
-        <button type="submit" hx-get="/chat" hx-target="#whole-body" hx-swap="innerHTML">Log In</button>
-    </form>
+  <body>
+    <div id="login_container">
+      <form id="login_form" hx-post="http://localhost:3000/login" hx-target="#login_container" hx-swap="outerHTML">
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+          <button type="submit">Log in</button>
+        </div
+      </form>
+    </div>
   </body>
 </html>

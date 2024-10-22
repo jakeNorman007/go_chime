@@ -1,36 +1,35 @@
 package middleware
 
 import (
-  "strings"
-  "context"
   "net/http"
-  "github.com/golang-jwt/jwt/v4"
   "github.com/jakeNorman007/go_chime/auth/users"
 )
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    authenticationHeader := r.Header.Get("Authorization")
+    // Allow access to the /login and /signup routes
+    if r.URL.Path == "/login" || r.URL.Path == "/signup" {
+      next.ServeHTTP(w, r)
+      return
+    }
 
-    if !strings.HasPrefix(authenticationHeader, "Bearer ") {
+    // Get the JWT from the cookie
+    cookie, err := r.Cookie("jwt")
+    if err != nil {
+      // No JWT cookie found, return unauthorized
       http.Error(w, "Unauthorized", http.StatusUnauthorized)
       return
     }
 
-    tokenString := strings.TrimPrefix(authenticationHeader, "Bearer ")
-
-    claims := &users.JWTClaims {}
-    token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface {}, error) {
-      return []byte(users.SecretKey), nil
-    })
-
-    if err != nil || !token.Valid {
+    // Validate the JWT here (using your existing ExtractUsernameFromToken or similar logic)
+    _, err = users.ExtractUsernameFromToken(cookie.Value)
+    if err != nil {
+      // JWT is invalid or expired
       http.Error(w, "Unauthorized", http.StatusUnauthorized)
       return
     }
 
-    ctx := context.WithValue(r.Context(), "ID", claims.ID)
-    ctx = context.WithValue(ctx, "Username", claims.Username)
-    next.ServeHTTP(w, r.WithContext(ctx))
+    // If we reached this point, the user is authenticated
+    next.ServeHTTP(w, r)
   })
 }

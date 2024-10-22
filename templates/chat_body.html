@@ -8,15 +8,39 @@
     <title>Go Chime</title>
   </head>
   <body>
-    <div hx-ext="ws" ws-connect="/ws">
+    <div id="chat">
       <div>
-        <ul id="chat_room" hx-swap="beforeend" hx-swap-oob="beforeend">
-        </ul>
+        <h3>Welcome, {{.Username}}</h3>
       </div>
-      <form id="form" ws-send hx-reset-on-success>
-        <input name="text" type="text" placeholder="type message here..."/>
-        <button type="submit">Send</button>
-      </form>
+      <ul id="chat_room">
+        <!-- li's render here -->
+      </ul>
     </div>
+    <form id="chat-form">
+      <input id="message-input" name="text" type="text" placeholder="type message here..."/>
+      <button type="submit">Send</button>
+    </form>
+    <script>
+    const socket = new WebSocket('ws://localhost:3000/ws');
+
+    socket.onmessage = function(event) {
+      const chatRoom = document.getElementById('chat_room');
+      const newMessage = document.createElement('li');
+      newMessage.innerHTML = event.data;
+      chatRoom.appendChild(newMessage);
+    };
+
+    document.getElementById('chat-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const input = document.getElementById('message-input');
+      const message = input.value;
+
+      if (message) {
+        socket.send(JSON.stringify({ text: message }));
+        input.value = '';
+      }
+    });
+    </script>
   </body>
 </html>
+

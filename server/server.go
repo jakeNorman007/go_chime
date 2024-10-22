@@ -54,7 +54,7 @@ func (s *Service) Run() error {
 
   router.HandleFunc("/", templates.ServeAuthenticationTemplates)
 
-  router.HandleFunc("/chat", templates.ServeChatTemplates)
+  router.HandleFunc("/chat", middleware.AuthMiddleware(templates.ServeChatTemplates))
   router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
     internals.ServeWebSocket(core, w, r)
   })

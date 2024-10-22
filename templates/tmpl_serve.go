@@ -1,8 +1,11 @@
 package templates
 
 import (
+  "log"
   "net/http"
+  "html/template"
   "github.com/jakeNorman007/go_chime/internals"
+  "github.com/jakeNorman007/go_chime/auth/users"
 )
 
 func ServeChatTemplates(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +19,39 @@ func ServeChatTemplates(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  http.ServeFile(w, r, "templates/chat_body.html")
+  cookie, err := r.Cookie("jwt")
+  if err != nil {
+    log.Println("Error finding JWT: ", err)
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+    return
+  }
+
+  username, err := users.ExtractUsernameFromToken(cookie.Value)
+  if err != nil {
+    log.Println("Error decoding JWT: ", err)
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+    return
+  }
+
+  tmpl, err := template.ParseFiles("templates/chat_body.html")
+  if err != nil {
+    log.Fatalf("Error parsing template: %s", err)
+    http.Error(w, "Internal server error: ", http.StatusInternalServerError)
+    return
+  }
+
+  data := struct {
+    Username string
+  }{
+    Username: username,
+  }
+
+  err = tmpl.Execute(w, data)
+  if err != nil {
+    log.Fatalf("Error executing template: %s", err)
+    http.Error(w, "Internal server error: ", http.StatusInternalServerError)
+    return
+  }
 }
 
 func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {

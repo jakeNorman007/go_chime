@@ -44,19 +44,21 @@ func (c *Core) Run() {
       c.clients[client] = true
       c.Unlock()
 
-      log.Printf("Client ID: %s has been registered", client.id)
+      log.Printf("%s has been registered", client.id)
 
       for _, msg := range c.messages {
         client.send <- GetMessageTemplate(msg)
       }
+
     case client := <- c.unregister:
       c.Lock()
       if _, ok := c.clients[client]; ok {
         close(client.send)
-        log.Printf("Client ID: %s has been unregistered", client.id)
+        log.Printf("%s has been unregistered", client.id)
         delete(c.clients, client)
       }
       c.Unlock()
+
     case msg := <- c.broadcast:
       c.RLock()
       c.messages = append(c.messages, msg)
@@ -82,7 +84,15 @@ func GetMessageTemplate(msg *Message) []byte {
 
   var renderedMessage bytes.Buffer
 
-  err = tmpl.Execute(&renderedMessage, msg)
+  data := struct {
+    Username string
+    Content  string
+  }{
+    Username: msg.ClientId,
+    Content:  msg.MessageContent,
+  }
+
+  err = tmpl.Execute(&renderedMessage, data)
   if err != nil {
     log.Fatalf("Template execution: %s", err)
   }

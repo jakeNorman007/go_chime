@@ -3,11 +3,10 @@ package internals
 import (
   "log"
   "time"
-  "bytes"
   "net/http"
   "encoding/json"
-  "github.com/google/uuid"
   "github.com/gorilla/websocket"
+  "github.com/jakeNorman007/go_chime/auth/users"
 )
 
 type Client struct {
@@ -30,17 +29,29 @@ const (
 )
 
 func ServeWebSocket(core *Core, w http.ResponseWriter, r *http.Request) {
-  connection, err := upgrader.Upgrade(w, r, nil)
+  token, err := r.Cookie("jwt")
   if err != nil {
-    log.Println(err)
+    log.Println("Error retrieving JWT:", err)
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+    return
+  }
+  
+  username, err := users.ExtractUsernameFromToken(token.Value)
+  if err != nil {
+    log.Println("Error decoding JWT:", err)
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
     return
   }
 
-  // for now client id is just going to be a uuid
-  id := uuid.New()
+  connection, err := upgrader.Upgrade(w, r, nil)
+  if err != nil {
+    log.Println("Error upgrading to websocket: ", err)
+    return
+  }
+
   
   client := &Client {
-    id: id.String(),
+    id: username,
     core: core,
     connection: connection,
     send: make(chan []byte, 256),
@@ -67,8 +78,6 @@ func (cl *Client) readFromCore() {
 
   for {
     _, text, err := cl.connection.ReadMessage()
-    log.Printf("value: %v", string(text));
-
     if err != nil {
       if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
         log.Printf("Error: %v", err)
@@ -76,18 +85,18 @@ func (cl *Client) readFromCore() {
       break
     }
 
-    msg := &WebSocketMessage {}
-    reader := bytes.NewReader(text)
-    decoder := json.NewDecoder(reader)
-    err = decoder.Decode(msg)
-    if err != nil {
-      log.Printf("Error: %v", err)
+    var wsMessage WebSocketMessage
+    if err := json.Unmarshal(text, &wsMessage); err != nil {
+      log.Printf("Error decoding websocket message: %v", err)
+      continue
     }
 
-    cl.core.broadcast <- &Message {
+    msg := &Message {
       ClientId: cl.id,
-      MessageContent: msg.WsMessageContent,
+      MessageContent: wsMessage.WsMessageContent,
     }
+
+    cl.core.broadcast <- msg
   }
 }
 
@@ -123,6 +132,7 @@ func (cl *Client) readFromWebSocketConnection() {
       if err := wr.Close(); err != nil {
         return
       }
+
     case <- ticker.C:
       cl.connection.SetWriteDeadline(time.Now().Add(writeWaitTime))
       if err := cl.connection.WriteMessage(websocket.PingMessage, nil); err != nil {
