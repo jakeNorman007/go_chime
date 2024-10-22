@@ -5,8 +5,8 @@ import (
   "github.com/jakeNorman007/go_chime/internals"
 )
 
-func ServeIndexTemplates(w http.ResponseWriter, r *http.Request) {
-  if r.URL.Path != "/" {
+func ServeChatTemplates(w http.ResponseWriter, r *http.Request) {
+  if r.URL.Path != "/chat" {
     http.Error(w, "Files served to the root path not found", http.StatusNotFound)
     return
   }
@@ -16,7 +16,7 @@ func ServeIndexTemplates(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  http.ServeFile(w, r, "templates/index.html")
+  http.ServeFile(w, r, "templates/chat_body.html")
 }
 
 func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,7 @@ func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  http.ServeFile(w, r, "templates/authentication.html")
+  http.ServeFile(w, r, "templates/log_in.html")
 }
 
 func ServeMessageTemplates(w http.ResponseWriter, r *http.Request) {

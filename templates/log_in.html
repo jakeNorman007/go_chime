@@ -7,10 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Chime</title>
   </head>
-  <body>
-    <div>
-      <h1>Hi from the authentication page</h1>
-    </div>
+  <body id="whole-body">
+    <h2>Log In</h2>
+    <form id="login-form" hx-post="/login" hx-target="#response" hx-swap="outerHTML">
+        <input type="text" name="email" placeholder="email" required>
+        <input type="password" name="password" placeholder="password" required>
+        <button type="submit" hx-get="/chat" hx-target="#whole-body" hx-swap="innerHTML">Log In</button>
+    </form>
   </body>
 </html>
-

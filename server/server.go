@@ -52,9 +52,9 @@ func (s *Service) Run() error {
   router.HandleFunc("/logout", usersHandler.Logout)
   router.HandleFunc("/protected", middleware.AuthMiddleware(users.ProtectedHandler))
 
-  router.HandleFunc("/", templates.ServeIndexTemplates)
-  router.HandleFunc("/auth", templates.ServeAuthenticationTemplates)
+  router.HandleFunc("/", templates.ServeAuthenticationTemplates)
 
+  router.HandleFunc("/chat", templates.ServeChatTemplates)
   router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
     internals.ServeWebSocket(core, w, r)
   })
