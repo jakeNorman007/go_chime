@@ -50,9 +50,13 @@ func (s *Service) Run() error {
   router.HandleFunc("/signup", usersHandler.CreateUser)
   router.HandleFunc("/login", usersHandler.Login)
   router.HandleFunc("/logout", usersHandler.Logout)
-  router.HandleFunc("/protected", middleware.AuthMiddleware(users.ProtectedHandler))
 
-  router.HandleFunc("/", templates.ServeAuthenticationTemplates)
+  router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    http.Redirect(w, r, "/log_in", http.StatusMovedPermanently)
+  })
+
+  router.HandleFunc("/log_in", templates.ServeAuthenticationTemplates)
+  router.HandleFunc("/sign_up", templates.ServeSignUpTemplates)
 
   router.HandleFunc("/chat", middleware.AuthMiddleware(templates.ServeChatTemplates))
   router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

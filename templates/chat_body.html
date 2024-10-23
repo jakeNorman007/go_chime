@@ -10,7 +10,8 @@
   <body>
     <div id="chat">
       <div>
-        <h3>Welcome, {{.Username}}</h3>
+        <h3>Welcome, {{ .Username }}</h3>
+        <!-- want to put a logout button here -->
       </div>
       <ul id="chat_room">
         <!-- li's render here -->
@@ -20,6 +21,11 @@
       <input id="message-input" name="text" type="text" placeholder="type message here..."/>
       <button type="submit">Send</button>
     </form>
+    <form action="/logout" method="POST" hx-target="body" hx-swap="innerHTML">
+      <button type="submit">Logout</button>
+    </form>
+
+    <!-- this script fires up the websocket and funnels the messages in as li elements -->
     <script>
     const socket = new WebSocket('ws://localhost:3000/ws');
 

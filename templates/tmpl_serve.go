@@ -55,7 +55,7 @@ func ServeChatTemplates(w http.ResponseWriter, r *http.Request) {
 }
 
 func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {
-  if r.URL.Path != "/auth" {
+  if r.URL.Path != "/log_in" {
     http.Error(w, "Files served to the root path not found", http.StatusNotFound)
     return
   }
@@ -66,6 +66,20 @@ func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {
   }
 
   http.ServeFile(w, r, "templates/log_in.html")
+}
+
+func ServeSignUpTemplates(w http.ResponseWriter, r *http.Request) {
+  if r.URL.Path != "/sign_up" {
+    http.Error(w, "Files served to the root path not found", http.StatusNotFound)
+    return
+  }
+
+  if r.Method != "GET" {
+    http.Error(w, "Files served to the root path could not be fetched", http.StatusNotFound)
+    return
+  }
+
+  http.ServeFile(w, r, "templates/sign_up.html")
 }
 
 func ServeMessageTemplates(w http.ResponseWriter, r *http.Request) {
