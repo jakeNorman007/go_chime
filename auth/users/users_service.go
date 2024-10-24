@@ -96,7 +96,7 @@ func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
   username := r.Context().Value("Username").(string)
 
   w.WriteHeader(http.StatusOK)
-  w.Write([]byte("Hi " + username + ", your user ID is " + userID))
+  w.Write([]byte("Id: " + userID + ", Username: " + username))
 }
 
 func ExtractUsernameFromToken(tokenString string) (string, error) {
@@ -112,5 +112,5 @@ func ExtractUsernameFromToken(tokenString string) (string, error) {
     return claims.Username, nil
   }
 
-  return "", errors.New("invalid token")
+  return "", errors.New("Invalid token.")
 }

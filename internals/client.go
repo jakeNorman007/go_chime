@@ -31,14 +31,14 @@ const (
 func ServeWebSocket(core *Core, w http.ResponseWriter, r *http.Request) {
   token, err := r.Cookie("jwt")
   if err != nil {
-    log.Println("Error retrieving JWT:", err)
+    log.Println("Error in retrieving JWT: ", err)
     http.Error(w, "Unauthorized", http.StatusUnauthorized)
     return
   }
   
   username, err := users.ExtractUsernameFromToken(token.Value)
   if err != nil {
-    log.Println("Error decoding JWT:", err)
+    log.Println("Error in decoding JWT: ", err)
     http.Error(w, "Unauthorized", http.StatusUnauthorized)
     return
   }
@@ -49,7 +49,6 @@ func ServeWebSocket(core *Core, w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  
   client := &Client {
     id: username,
     core: core,
@@ -80,7 +79,7 @@ func (cl *Client) readFromCore() {
     _, text, err := cl.connection.ReadMessage()
     if err != nil {
       if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-        log.Printf("Error: %v", err)
+        log.Printf("Unexpected close error: %v", err)
       }
       break
     }

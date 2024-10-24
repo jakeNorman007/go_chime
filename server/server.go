@@ -57,6 +57,7 @@ func (s *Service) Run() error {
 
   router.HandleFunc("/log_in", templates.ServeAuthenticationTemplates)
   router.HandleFunc("/sign_up", templates.ServeSignUpTemplates)
+  router.HandleFunc("/unauthorized", templates.ServeUnauthorizedTemplates)
 
   router.HandleFunc("/chat", middleware.AuthMiddleware(templates.ServeChatTemplates))
   router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

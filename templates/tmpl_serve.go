@@ -10,12 +10,12 @@ import (
 
 func ServeChatTemplates(w http.ResponseWriter, r *http.Request) {
   if r.URL.Path != "/chat" {
-    http.Error(w, "Files served to the root path not found", http.StatusNotFound)
+    http.Error(w, "Files served to the root path not found.", http.StatusNotFound)
     return
   }
 
   if r.Method != "GET" {
-    http.Error(w, "Files served to the root path could not be fetched", http.StatusNotFound)
+    http.Error(w, "Files served to the root path could not be fetched.", http.StatusNotFound)
     return
   }
 
@@ -56,12 +56,12 @@ func ServeChatTemplates(w http.ResponseWriter, r *http.Request) {
 
 func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {
   if r.URL.Path != "/log_in" {
-    http.Error(w, "Files served to the root path not found", http.StatusNotFound)
+    http.Error(w, "Files served to the root path not found.", http.StatusNotFound)
     return
   }
 
   if r.Method != "GET" {
-    http.Error(w, "Files served to the root path could not be fetched", http.StatusNotFound)
+    http.Error(w, "Files served to the root path could not be fetched.", http.StatusNotFound)
     return
   }
 
@@ -70,20 +70,35 @@ func ServeAuthenticationTemplates(w http.ResponseWriter, r *http.Request) {
 
 func ServeSignUpTemplates(w http.ResponseWriter, r *http.Request) {
   if r.URL.Path != "/sign_up" {
-    http.Error(w, "Files served to the root path not found", http.StatusNotFound)
+    http.Error(w, "Files served to the root path not found.", http.StatusNotFound)
     return
   }
 
   if r.Method != "GET" {
-    http.Error(w, "Files served to the root path could not be fetched", http.StatusNotFound)
+    http.Error(w, "Files served to the root path could not be fetched.", http.StatusNotFound)
     return
   }
 
   http.ServeFile(w, r, "templates/sign_up.html")
 }
 
+func ServeUnauthorizedTemplates(w http.ResponseWriter, r * http.Request) {
+  if r.URL.Path != "/unauthorized" {
+    http.Error(w, "Files served to the root path not found.", http.StatusNotFound)
+    return
+  }
+
+  if r.Method != "GET" {
+    http.Error(w, "Files served to the root path could not be fetched.", http.StatusNotFound)
+    return
+  }
+
+  http.ServeFile(w, r, "templates/unauthorized.html")
+}
+
 func ServeMessageTemplates(w http.ResponseWriter, r *http.Request) {
   core := internals.NewCore()
+
   go core.Run()
 
   internals.ServeWebSocket(core, w, r);

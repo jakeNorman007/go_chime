@@ -44,8 +44,6 @@ func (c *Core) Run() {
       c.clients[client] = true
       c.Unlock()
 
-      log.Printf("%s has been registered", client.id)
-
       for _, msg := range c.messages {
         client.send <- GetMessageTemplate(msg)
       }
@@ -54,7 +52,6 @@ func (c *Core) Run() {
       c.Lock()
       if _, ok := c.clients[client]; ok {
         close(client.send)
-        log.Printf("%s has been unregistered", client.id)
         delete(c.clients, client)
       }
       c.Unlock()

@@ -2,7 +2,6 @@ package users
 
 import (
   "net/http"
-  "encoding/json"
 )
 
 type Handler struct {
@@ -16,34 +15,37 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-  var userRequest CreateUserRequest
-
-  if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
-    http.Error(w, err.Error(), http.StatusBadRequest)
-    return
-  }
-
-  response, err := h.Service.CreateUser(r.Context(), &userRequest)
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-
-  w.WriteHeader(http.StatusOK)
-  if err := json.NewEncoder(w).Encode(response); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-}
-
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
   if r.Method != http.MethodPost {
-    http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+    http.Error(w, "Invalid http method for creating user.", http.StatusMethodNotAllowed)
     return
   }
 
   if err := r.ParseForm(); err != nil {
-    http.Error(w, "Failed to parse form", http.StatusBadRequest)
+    http.Error(w, "Failed to parse sign up form.", http.StatusBadRequest)
+  }
+
+  createUserRequest := CreateUserRequest {
+    Username: r.FormValue("username"),
+    Email: r.FormValue("email"),
+    Password: r.FormValue("password"),
+  }
+
+  _, err := h.Service.CreateUser(r.Context(), &createUserRequest)
+  if err != nil {
+    http.Redirect(w, r, "/unauthorized.html", http.StatusUnauthorized)
+  }
+
+  w.Header().Set("HX-Redirect", "/log_in")
+}
+
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+  if r.Method != http.MethodPost {
+    http.Error(w, "Invalid http method for logging in user.", http.StatusMethodNotAllowed)
+    return
+  }
+
+  if err := r.ParseForm(); err != nil {
+    http.Error(w, "Failed to parse log in form.", http.StatusBadRequest)
   }
 
   userLoginRequest := LoginUserRequest {
@@ -53,7 +55,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
   user, err := h.Service.Login(r.Context(), &userLoginRequest)
   if err != nil {
-    http.Error(w, "Invalid login credentials", http.StatusUnauthorized)
+    http.Redirect(w, r, "/unauthorized.html", http.StatusUnauthorized)
     return
   }
 
@@ -79,5 +81,5 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
     HttpOnly: true,
   })
 
-  http.Redirect(w, r, "/auth", http.StatusSeeOther)
+  http.Redirect(w, r, "/log_in", http.StatusSeeOther)
 }
