@@ -1,6 +1,6 @@
-<div id="chat_room" hx-swap-oob="beforeend">
-  <li id="message">
-    <p>{{ .Username }}: </p>
-    <p>{{ .Content }}</p>
+<div id="chat_room" hx-swap-oob="beforeend" class="ml-3">
+  <li id="message" class="flex flex-col mt-2">
+    <p class="font-semibold">{{ .Username }}: </p>
+    <p class="ml-[3rem] bg-blue-300 w-fit px-3 py-2 rounded-md">{{ .Content }}</p>
   </li>
 </div>

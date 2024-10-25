@@ -5,25 +5,34 @@
     <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Chime</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>GoChime</title>
   </head>
-  <body>
-    <div id="chat">
-      <div>
-        <h3>Welcome, {{ .Username }}</h3>
-        <!-- want to put a logout button here -->
-      </div>
-      <ul id="chat_room">
-        <!-- li's render here -->
-      </ul>
+  <body class="flex h-screen">
+    <div class="flex flex-col px-2 border-r border-black w-[15%]">
+      <p class="text-lg font-semibold">GoChime</p>
+      <p>users will be listed here.</p>
     </div>
-    <form id="chat-form">
-      <input id="message-input" name="text" type="text" placeholder="type message here..."/>
-      <button type="submit">Send</button>
-    </form>
-    <form action="/logout" method="POST" hx-target="body" hx-swap="innerHTML">
-      <button type="submit">Logout</button>
-    </form>
+    <div class="w-[85%]">
+      <div id="chat" class="flex flex-col justify-between">
+        <div class="flex gap-[3rem] justify-end items-center mt-3 mr-3">
+          <h3 class="text-xl">Welcome,  {{ .Username }}</h3>
+          <!-- want to put a logout button here -->
+          <form action="/logout" method="POST" hx-target="body" hx-swap="innerHTML">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2">Logout</button>
+          </form>
+        </div>
+        <ul id="chat_room">
+          <!-- li's render here -->
+        </ul>
+      </div>
+      <div class="w-[90%] fixed bottom-5">
+        <form id="chat-form" class="w-full flex gap-4">
+          <input id="message-input" name="text" type="text" placeholder="type message here..." class="w-[82%] border border-black py-1 pl-2 ml-3"/>
+          <button type="submit" class="w-[10%] bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 mr-3">Send</button>
+        </form>
+      </div>
+    </div>
 
     <!-- this script fires up the websocket and funnels the messages in as li elements -->
     <script>
@@ -49,4 +58,3 @@
     </script>
   </body>
 </html>
-
