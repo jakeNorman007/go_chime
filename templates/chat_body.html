@@ -15,11 +15,11 @@
     </div>
     <div class="w-[85%]">
       <div id="chat" class="flex flex-col justify-between">
-        <div class="flex gap-[3rem] justify-end items-center mt-3 mr-3">
+        <div class="flex gap-[3rem] justify-end items-center border-b border-black">
           <h3 class="text-xl">Welcome,  {{ .Username }}</h3>
           <!-- want to put a logout button here -->
           <form action="/logout" method="POST" hx-target="body" hx-swap="innerHTML">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2">Logout</button>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-300 text-white px-4 py-2 mr-3 my-3">Logout</button>
           </form>
         </div>
         <ul id="chat_room">
