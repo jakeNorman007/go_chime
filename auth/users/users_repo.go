@@ -47,3 +47,30 @@ func (r *repo) GetUserByEmail(ctx context.Context, email string) (*User, error) 
 
   return &user, nil
 }
+
+func (r *repo) GetAllUsers(ctx context.Context) ([]*User, error) {
+  query := "SELECT username FROM users"
+
+  rows, err := r.db.QueryContext(ctx, query)
+  if err != nil {
+    return nil, err
+  }
+
+  defer rows.Close()
+
+  var users []*User
+  for rows.Next() {
+    user := new(User)
+    if err := rows.Scan(&user.Username); err != nil {
+      return nil, err
+    }
+
+    users = append(users, user)
+  }
+
+  if err := rows.Err(); err != nil {
+    return nil, err
+  }
+
+  return users, nil
+}

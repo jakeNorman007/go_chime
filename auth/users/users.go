@@ -1,6 +1,9 @@
 package users
 
-import "context"
+import (
+  "context"
+  "net/http"
+)
 
 type User struct {
   ID          int64  `json:"id"`
@@ -35,9 +38,11 @@ type LoginUserResponse struct {
 type Repo interface {
   CreateUser(ctx context.Context, user *User) (*User, error)
   GetUserByEmail(ctx context.Context, email string) (*User, error)
+  GetAllUsers(ctx context.Context) ([]*User, error)
 }
 
 type Service interface {
   CreateUser(c context.Context, request *CreateUserRequest) (*CreateUserResponse, error)
   Login(c context.Context, request *LoginUserRequest) (*LoginUserResponse, error)
+  GetUsersHandler(w http.ResponseWriter, r *http.Request)
 }

@@ -15,17 +15,17 @@ import (
 )
 
 type Service struct {
-    addr          string
-    usersService  users.Service
+  addr          string
+  usersService  users.Service
 }
 
 func NewService(addr string, usersService users.Service) *Service {
-    port, _ := strconv.Atoi(os.Getenv("SERVER_PORT"))
+  port, _ := strconv.Atoi(os.Getenv("SERVER_PORT"))
 
-    return &Service {
-        addr:   fmt.Sprintf(":%d", port),
-        usersService: usersService,
-    }
+  return &Service {
+    addr:   fmt.Sprintf(":%d", port),
+    usersService: usersService,
+  }
 }
 
 func (s *Service) Run() error {
@@ -47,9 +47,11 @@ func (s *Service) Run() error {
 
   usersHandler := users.NewHandler(s.usersService)
 
+
   router.HandleFunc("/signup", usersHandler.CreateUser)
   router.HandleFunc("/login", usersHandler.Login)
   router.HandleFunc("/logout", usersHandler.Logout)
+  router.HandleFunc("/users", usersHandler.GetUsersHandler) 
 
   router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/log_in", http.StatusMovedPermanently)
