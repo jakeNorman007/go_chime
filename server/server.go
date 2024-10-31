@@ -51,7 +51,6 @@ func (s *Service) Run() error {
   router.HandleFunc("/signup", usersHandler.CreateUser)
   router.HandleFunc("/login", usersHandler.Login)
   router.HandleFunc("/logout", usersHandler.Logout)
-  router.HandleFunc("/users", usersHandler.GetUsersHandler) 
 
   router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/log_in", http.StatusMovedPermanently)

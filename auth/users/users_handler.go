@@ -45,7 +45,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
   }
 
   if err := r.ParseForm(); err != nil {
-    http.Error(w, "Failed to parse log in form.", http.StatusBadRequest)
+    http.Error(w, "Failed to parse log in form", http.StatusBadRequest)
   }
 
   userLoginRequest := LoginUserRequest {

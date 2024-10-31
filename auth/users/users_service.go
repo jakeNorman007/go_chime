@@ -1,14 +1,11 @@
 package users
 
 import (
-  "fmt"
   "time"
   "errors"
   "context"
   "strconv"
   "net/http"
-  "html/template"
-  "path/filepath"
   "github.com/golang-jwt/jwt/v4"
   "github.com/jakeNorman007/go_chime/auth/utils"
 )
@@ -116,36 +113,4 @@ func ExtractUsernameFromToken(tokenString string) (string, error) {
   }
 
   return "", errors.New("Invalid token.")
-}
-
-func (s *service) GetUsersHandler(w http.ResponseWriter, r *http.Request) {
-  ctx, cancel := context.WithTimeout(r.Context(), s.timeout)
-  defer cancel()
-
-  users, err := s.Repo.GetAllUsers(ctx)
-  if err != nil {
-    http.Error(w, "Failed to get users", http.StatusInternalServerError)
-    return
-  }
-
-  data := struct {
-    Users []*User
-  }{
-    Users: users,
-  }
-
-  fmt.Printf("Data struct: %+v\n", data.Users)
-
-  templatePath := filepath.Join("templates", "chat_body.html")
-  t, err := template.ParseFiles(templatePath)
-  if err != nil {
-    http.Error(w, "Failed to parse template", http.StatusInternalServerError)
-    return
-  }
-
-  //w.Header().Set("Content-Type", "text/html")
-  if err := t.Execute(w, data); err != nil {
-    http.Error(w, "Failed to execute template", http.StatusInternalServerError)
-    return
-  }
 }
